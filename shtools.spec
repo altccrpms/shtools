@@ -31,6 +31,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Requires:       fftw-devel
 Requires:       environment-modules
+Provides:       %{shortname}%{?_cc_name_suffix} = %{version}-%{release}
 Provides:       %{shortname}%{?_cc_name_suffix}%{?_isa} = %{version}-%{release}
 
 %description
@@ -44,7 +45,8 @@ analyses on the sphere.
 Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
-Provides:       %{shortname}%{?_cc_name_suffix}%{?_isa}-devel = %{version}-%{release}
+Provides:       %{shortname}%{?_cc_name_suffix}-devel = %{version}-%{release}
+Provides:       %{shortname}%{?_cc_name_suffix}-devel%{?_isa} = %{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -81,10 +83,10 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 # AltCCRPMS
 # Make the environment-modules file
-mkdir -p %{buildroot}/etc/modulefiles/%{shortname}/%{_cc_name}
+mkdir -p %{buildroot}/etc/modulefiles/%{shortname}/%{_cc_name}/%{version}
 # Since we're doing our own substitution here, use our own definitions.
 sed -e 's#@PREFIX@#'%{_prefix}'#' -e 's#@LIB@#%{_lib}#' -e 's#@ARCH@#%{_arch}#' -e 's#@CC@#%{_cc_name}#' \
-    < %SOURCE1 > %{buildroot}/etc/modulefiles/%{shortname}/%{_cc_name}/%{version}-%{_arch}
+    < %SOURCE1 > %{buildroot}/etc/modulefiles/%{shortname}/%{_cc_name}/%{version}/%{_arch}
 
 
 %clean
@@ -98,7 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %doc LICENSE
-/etc/modulefiles/%{shortname}/%{_cc_name}/%{version}-%{_arch}
+/etc/modulefiles/%{shortname}/%{_cc_name}/
 %{_libdir}
 %{_mandir}/man3/*.3*
 
