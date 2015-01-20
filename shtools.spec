@@ -18,14 +18,14 @@
 %global shortname shtools
 
 Name:           shtools%{?_cc_name_suffix}
-Version:        2.8
-Release:        4%{?dist}
+Version:        2.9
+Release:        1%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://www.ipgp.fr/~wieczor/SHTOOLS/SHTOOLS.html
-Source0:        http://www.ipgp.fr/~wieczor/SHTOOLS%{version}.tar.Z
+Source0:        http://downloads.sourceforge.net/shtools/SHTOOLS%{version}.zip
 Source1:        shtools.module.in
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -104,6 +104,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 20 2015 Orion Poplawski <orion@cora.nwra.com> - 2.9-1
+- Update to 2.9
+- Intel 2015u1
+
 * Mon May 19 2014 Orion Poplawski <orion@cora.nwra.com> - 2.8-4
 - Rebuild with intel 2013sp1u3
 
