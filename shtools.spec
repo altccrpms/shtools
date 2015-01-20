@@ -19,7 +19,7 @@
 
 Name:           shtools%{?_cc_name_suffix}
 Version:        2.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -104,6 +104,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 19 2014 Orion Poplawski <orion@cora.nwra.com> - 2.8-3
+- Rebuild with intel 2013sp1u2
+
 * Wed Oct 16 2013 Orion Poplawski <orion@cora.nwra.com> - 2.8-2
 - Rebuild with intel 2013sp1
 
