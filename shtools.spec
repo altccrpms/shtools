@@ -18,7 +18,7 @@
 %global shortname shtools
 
 Name:           shtools%{?_cc_name_suffix}
-Version:        2.7
+Version:        2.8
 Release:        1%{?dist}
 Summary:        Tools for working with spherical harmonics
 
@@ -44,7 +44,6 @@ analyses on the sphere.
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries
-Requires:       %{name} = %{version}-%{release}
 Provides:       %{shortname}%{?_cc_name_suffix}-devel = %{version}-%{release}
 Provides:       %{shortname}%{?_cc_name_suffix}-devel%{?_isa} = %{version}-%{release}
 
@@ -100,12 +99,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %doc LICENSE
-/etc/modulefiles/%{shortname}/%{_cc_name}/
-%{_libdir}
-%{_mandir}/man3/*.3*
+/etc/modulefiles/%{shortname}/
+%{_prefix}/
 
 
 %changelog
+* Tue Apr 9 2013 Orion Poplawski <orion@cora.nwra.com> - 2.8-1
+- Update to 2.8
+- intel 2013
+
 * Mon Sep 10 2012 Orion Poplawski <orion@cora.nwra.com> - 2.7-1
 - Update to 2.7
 - intel 2012
