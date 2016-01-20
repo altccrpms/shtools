@@ -10,18 +10,14 @@
 %global _defaultdocdir %{_prefix}/share/doc
 %global _mandir %{_prefix}/share/man
 
-#We don't want to be beholden to the proprietary libraries
-%global    _use_internal_dependency_generator 0
-%global    __find_requires %{nil}
-
 # Non gcc compilers don't generate build ids
 %undefine _missing_build_ids_terminate_build
 
 %global shortname shtools
 
-Name:           shtools%{_name_ver_suffix}
+Name:           shtools-3.1%{_name_ver_suffix}
 Version:        3.1
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -37,6 +33,8 @@ BuildRequires:  fftw-devel
 BuildRequires:  tcsh
 Provides:       %{shortname}%{_name_suffix} = %{version}-%{release}
 Provides:       %{shortname}%{_name_suffix}%{?_isa} = %{version}-%{release}
+Provides:       %{shortname}%{_name_ver_suffix} = %{version}-%{release}
+Provides:       %{shortname}%{_name_ver_suffix}%{?_isa} = %{version}-%{release}
 
 %description
 SHTOOLS is an archive of fortran 95 based software that can be used to
@@ -52,6 +50,8 @@ Requires:       fftw-devel
 Requires:       environment(modules)
 Provides:       %{shortname}%{_name_suffix}-devel = %{version}-%{release}
 Provides:       %{shortname}%{_name_suffix}-devel%{?_isa} = %{version}-%{release}
+Provides:       %{shortname}%{_name_ver_suffix}-devel = %{version}-%{release}
+Provides:       %{shortname}%{_name_ver_suffix}-devel%{?_isa} = %{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -93,14 +93,26 @@ mkdir -p %{buildroot}%{_modulefiledir}
 sed -e 's#@PREFIX@#'%{_prefix}'#' -e 's#@LIB@#%{_lib}#' -e 's#@ARCH@#%{_arch}#' -e 's#@CC@#%{_cc_name}#' \
     < %SOURCE1 > %{buildroot}%{_modulefiledir}/%{version}
 
+%{?_licensedir:mkdir -p %{buildroot}%{_licensedir}}
+%{!?_licensedir:mkdir -p %{buildroot}%{_defaultdocdir}}
+
 
 %files devel
-%doc LICENSE
+%license LICENSE
+%{?_licensedir:%{_licensedir}}
+%{!?_licensedir:%{_defaultdocdir}}
 %{_modulefiledir}
 %{_prefix}/
 
 
 %changelog
+* Wed Jan 20 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-3
+- Use %%license, own directory
+
+* Wed Dec 23 2015 Orion Poplawski <orion@cora.nwra.com> - 3.1-2
+- Use rpm-opt-hooks for dependencies
+- Intel 2016.1.150
+
 * Thu Oct 22 2015 Orion Poplawski <orion@cora.nwra.com> - 3.1-1
 - Update to 3.1
 - Intel 2016.0.109
