@@ -25,6 +25,7 @@ License:        BSD
 URL:            http://shtools.ipgp.fr/
 Source0:        https://github.com/SHTOOLS/SHTOOLS/archive/v%{version}.tar.gz#/%{shortname}-%{version}.tar.gz
 Source1:        shtools.module.in
+# https://github.com/SHTOOLS/SHTOOLS/pull/12
 Patch0:         shtools-openmp.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
