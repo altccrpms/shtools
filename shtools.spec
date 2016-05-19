@@ -17,7 +17,7 @@
 
 Name:           shtools-3.1%{_name_ver_suffix}
 Version:        3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -25,6 +25,7 @@ License:        BSD
 URL:            http://shtools.ipgp.fr/
 Source0:        https://github.com/SHTOOLS/SHTOOLS/archive/v%{version}.tar.gz#/%{shortname}-%{version}.tar.gz
 Source1:        shtools.module.in
+Patch0:         shtools-openmp.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  fftw-devel
@@ -59,19 +60,20 @@ developing applications that use %{name}.
 
 
 %prep
-%setup -q -n SHTOOLS-%{version}
-#ifort needs .f90
-find -name \*.f95 | while read x 
-do
-  mv $x ${x/.f95/.f90}
-done
-sed -i -e 's/\.f95/.f90/g' src/Makefile
+%autosetup -p1 -n SHTOOLS-%{version}
+sed -i -e '/^AR *=/d' src/Makefile
+mkdir -p openmp
+cp -rl Makefile lib modules src openmp/
 
 
 %build
-export F95FLAGS="$FCFLAGS -ipo"
+export F95FLAGS="$FCFLAGS -ipo -free -Tf"
 # f2py fails until we have numpy with intel
 make F95=$FC %{?_smp_mflags} || true
+pushd openmp
+export F95FLAGS="-qopenmp $F95FLAGS"
+make F95=$FC %{?_smp_mflags} || true
+popd
 mv man/man1 man/man3
 for x in man/man3/*.1
 do
@@ -81,8 +83,9 @@ done
 
 %install
 mkdir -p $RPM_BUILD_ROOT%{_libdir}
-cp -p lib/* $RPM_BUILD_ROOT%{_libdir}
-cp -p modules/* $RPM_BUILD_ROOT%{_libdir}
+cp -p lib/libSHTOOLS.a $RPM_BUILD_ROOT%{_libdir}
+cp -p openmp/lib/libSHTOOLS.a $RPM_BUILD_ROOT%{_libdir}/libSHTOOLS_thread.a
+cp -p modules/shtools.mod $RPM_BUILD_ROOT%{_libdir}
 mkdir -p $RPM_BUILD_ROOT%{_mandir}
 cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
@@ -106,6 +109,9 @@ sed -e 's#@PREFIX@#'%{_prefix}'#' -e 's#@LIB@#%{_lib}#' -e 's#@ARCH@#%{_arch}#' 
 
 
 %changelog
+* Thu May 19 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-4
+- Build libSHTOOLS_thread.a with openmp
+
 * Wed Jan 20 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-3
 - Use %%license, own directory
 
