@@ -1,22 +1,9 @@
-# AltCCRPMS
-%global _cc_name %{getenv:COMPILER_NAME}
-%global _cc_version %{getenv:COMPILER_VERSION}
-%global _cc_name_ver %{_cc_name}-%{_cc_version}
-%global _name_suffix -%{_cc_name}
-%global _name_ver_suffix -%{_cc_name_ver}
-%global _prefix /opt/%{_cc_name_ver}/%{shortname}-%{version}
-%global _modulefiledir /opt/modulefiles/Compiler/%{_cc_name}/%{_cc_version}/%{shortname}
-
-%global _defaultdocdir %{_prefix}/share/doc
-%global _mandir %{_prefix}/share/man
-
-# Non gcc compilers don't generate build ids
-%undefine _missing_build_ids_terminate_build
-
 %global shortname shtools
+%global ver 3.1
+%{?altcc_init:%altcc_init -n %{shortname} -v %{ver}}
 
-Name:           shtools-3.1%{_name_ver_suffix}
-Version:        3.1
+Name:           shtools%{?altcc_pkg_suffix}
+Version:        %{ver}
 Release:        4%{?dist}
 Summary:        Tools for working with spherical harmonics
 
@@ -29,14 +16,12 @@ Source1:        shtools.module.in
 Patch0:         shtools-openmp.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+%{!?altcc:BuildRequires: gcc-gfortran}
 BuildRequires:  fftw-devel
 # Need to compiled numpy with Intel
-#BuildRequires:  numpy-f2py%{?_name_suffix}
+#BuildRequires:  numpy-f2py%{?altcc_dep_suffix}
 BuildRequires:  tcsh
-Provides:       %{shortname}%{_name_suffix} = %{version}-%{release}
-Provides:       %{shortname}%{_name_suffix}%{?_isa} = %{version}-%{release}
-Provides:       %{shortname}%{_name_ver_suffix} = %{version}-%{release}
-Provides:       %{shortname}%{_name_ver_suffix}%{?_isa} = %{version}-%{release}
+%?altcc_provide
 
 %description
 SHTOOLS is an archive of fortran 95 based software that can be used to
@@ -50,10 +35,7 @@ Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       fftw-devel
 Requires:       environment(modules)
-Provides:       %{shortname}%{_name_suffix}-devel = %{version}-%{release}
-Provides:       %{shortname}%{_name_suffix}-devel%{?_isa} = %{version}-%{release}
-Provides:       %{shortname}%{_name_ver_suffix}-devel = %{version}-%{release}
-Provides:       %{shortname}%{_name_ver_suffix}-devel%{?_isa} = %{version}-%{release}
+%{?altcc:%altcc_provide devel}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -68,11 +50,18 @@ cp -rl Makefile lib modules src openmp/
 
 
 %build
+[ -z "$FC" ] && export FC=gfortran
+%if "%{?altcc_cc_name}" == "intel"
 export F95FLAGS="$FCFLAGS -ipo -free -Tf"
+%endif
 # f2py fails until we have numpy with intel
 make F95=$FC %{?_smp_mflags} || true
 pushd openmp
+%if "%{?altcc_cc_name}" == "intel"
 export F95FLAGS="-qopenmp $F95FLAGS"
+%else
+export F95FLAGS="-fopenmp $F95FLAGS"
+%endif
 make F95=$FC %{?_smp_mflags} || true
 popd
 mv man/man1 man/man3
@@ -90,23 +79,17 @@ cp -p modules/shtools.mod $RPM_BUILD_ROOT%{_libdir}
 mkdir -p $RPM_BUILD_ROOT%{_mandir}
 cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
-# AltCCRPMS
-# Make the environment-modules file
-mkdir -p %{buildroot}%{_modulefiledir}
-# Since we're doing our own substitution here, use our own definitions.
-sed -e 's#@PREFIX@#'%{_prefix}'#' -e 's#@LIB@#%{_lib}#' -e 's#@ARCH@#%{_arch}#' -e 's#@CC@#%{_cc_name}#' \
-    < %SOURCE1 > %{buildroot}%{_modulefiledir}/%{version}
-
-%{?_licensedir:mkdir -p %{buildroot}%{_licensedir}}
-%{!?_licensedir:mkdir -p %{buildroot}%{_defaultdocdir}}
+%{?altcc:%altcc_writemodule %SOURCE1}
+%{?altcc:%altcc_license}
 
 
 %files devel
+%{?altcc:%altcc_files -lm %{_libdir} %{_mandir}/man3}
 %license LICENSE
-%{?_licensedir:%{_licensedir}}
-%{!?_licensedir:%{_defaultdocdir}}
-%{_modulefiledir}
-%{_prefix}/
+%{_libdir}/libSHTOOLS.a
+%{_libdir}/libSHTOOLS_thread.a
+%{_libdir}/shtools.mod
+%{_mandir}/man3/*.3*
 
 
 %changelog
