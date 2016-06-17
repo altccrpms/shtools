@@ -2,18 +2,19 @@
 %global ver 3.1
 %{?altcc_init:%altcc_init -n %{shortname} -v %{ver}}
 
+%global commit0 8405c781f2eacf303605504a02b2d13f1beecfbb
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+
 Name:           shtools%{?altcc_pkg_suffix}
 Version:        %{ver}
-Release:        4%{?dist}
+Release:        5%{?commit0:.git%{shortcommit0}}.openmp%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://shtools.ipgp.fr/
-Source0:        https://github.com/SHTOOLS/SHTOOLS/archive/v%{version}.tar.gz#/%{shortname}-%{version}.tar.gz
+Source0:        https://github.com/SHTOOLS/SHTOOLS/archive/%{?commit0:%commit0}%{!?commit0:v%{version}}.tar.gz#/%{shortname}-%{version}%{?commit0:-%shortcommit0}.tar.gz
 Source1:        shtools.module.in
-# https://github.com/SHTOOLS/SHTOOLS/pull/12
-Patch0:         shtools-openmp.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %{!?altcc:BuildRequires: gcc-gfortran}
@@ -43,7 +44,7 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup -p1 -n SHTOOLS-%{version}
+%autosetup -p1 -n SHTOOLS-%{?commit0:%commit0}%{!?commit0:%{version}}
 sed -i -e '/^AR *=/d' src/Makefile
 mkdir -p openmp
 cp -rl Makefile lib modules src openmp/
@@ -62,7 +63,7 @@ export F95FLAGS="-qopenmp $F95FLAGS"
 %else
 export F95FLAGS="-fopenmp $F95FLAGS"
 %endif
-make F95=$FC %{?_smp_mflags} || true
+make F95=$FC %{?_smp_mflags} LIBNAMEMP=SHTOOLS_thread fortran-mp
 popd
 mv man/man1 man/man3
 for x in man/man3/*.1
@@ -73,9 +74,9 @@ done
 
 %install
 mkdir -p $RPM_BUILD_ROOT%{_libdir}
-cp -p lib/libSHTOOLS.a $RPM_BUILD_ROOT%{_libdir}
-cp -p openmp/lib/libSHTOOLS.a $RPM_BUILD_ROOT%{_libdir}/libSHTOOLS_thread.a
-cp -p modules/shtools.mod $RPM_BUILD_ROOT%{_libdir}
+cp -p lib/libSHTOOLS.a $RPM_BUILD_ROOT%{_libdir}/
+cp -p openmp/lib/libSHTOOLS_thread.a $RPM_BUILD_ROOT%{_libdir}/
+cp -p modules/shtools.mod $RPM_BUILD_ROOT%{_libdir}/
 mkdir -p $RPM_BUILD_ROOT%{_mandir}
 cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
@@ -93,6 +94,9 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 
 %changelog
+* Fri Jun 17 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-5.git.openmp
+- Use upstream's openmp development version
+
 * Thu May 19 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-4
 - Build libSHTOOLS_thread.a with openmp
 
