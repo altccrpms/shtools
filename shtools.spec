@@ -1,13 +1,13 @@
 %global shortname shtools
-%global ver 3.1
+%global ver 3.4
 %{?altcc_init:%altcc_init -n %{shortname} -v %{ver}}
 
-%global commit0 8405c781f2eacf303605504a02b2d13f1beecfbb
+#global commit0 8405c781f2eacf303605504a02b2d13f1beecfbb
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
 Name:           shtools%{?altcc_pkg_suffix}
 Version:        %{ver}
-Release:        5%{?commit0:.git%{shortcommit0}}.openmp%{?dist}
+Release:        1%{?commit0:.git%{shortcommit0}}.openmp%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -47,7 +47,7 @@ developing applications that use %{name}.
 %autosetup -p1 -n SHTOOLS-%{?commit0:%commit0}%{!?commit0:%{version}}
 sed -i -e '/^AR *=/d' src/Makefile
 mkdir -p openmp
-cp -rl Makefile lib modules src openmp/
+cp -rl Makefile src openmp/
 
 
 %build
@@ -55,8 +55,9 @@ cp -rl Makefile lib modules src openmp/
 %if "%{?altcc_cc_name}" == "intel"
 export F95FLAGS="$FCFLAGS -ipo -free -Tf"
 %endif
+make F95=$FC %{?_smp_mflags} fortran
 # f2py fails until we have numpy with intel
-make F95=$FC %{?_smp_mflags} || true
+make F95=$FC %{?_smp_mflags} python || true
 pushd openmp
 %if "%{?altcc_cc_name}" == "intel"
 export F95FLAGS="-qopenmp $F95FLAGS"
@@ -94,6 +95,10 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 
 %changelog
+* Mon Sep 26 2016 Orion Poplawski <orion@cora.nwra.com> - 3.4-1
+- Update to 3.4
+- Intel 2016.4.258
+
 * Fri Jun 17 2016 Orion Poplawski <orion@cora.nwra.com> - 3.1-5.git.openmp
 - Use upstream's openmp development version
 
