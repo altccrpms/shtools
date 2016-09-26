@@ -7,7 +7,7 @@
 
 Name:           shtools%{?altcc_pkg_suffix}
 Version:        %{ver}
-Release:        1%{?commit0:.git%{shortcommit0}}.openmp%{?dist}
+Release:        1%{?commit0:.git%{shortcommit0}}%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -53,7 +53,7 @@ cp -rl Makefile src openmp/
 %build
 [ -z "$FC" ] && export FC=gfortran
 %if "%{?altcc_cc_name}" == "intel"
-export F95FLAGS="$FCFLAGS -ipo -free -Tf"
+export F95FLAGS="$FCFLAGS -free -Tf"
 %endif
 make F95=$FC %{?_smp_mflags} fortran
 # f2py fails until we have numpy with intel
