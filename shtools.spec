@@ -1,6 +1,7 @@
 %global shortname shtools
 %global ver 3.4
-%{?altcc_init:%altcc_init -n %{shortname} -v %{ver}}
+# We use -ipo so we depend on the specific compiler version (-f)
+%{?altcc_init:%altcc_init -n %{shortname} -v %{ver} -f}
 
 #global commit0 8405c781f2eacf303605504a02b2d13f1beecfbb
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
@@ -53,7 +54,7 @@ cp -rl Makefile src openmp/
 %build
 [ -z "$FC" ] && export FC=gfortran
 %if "%{?altcc_cc_name}" == "intel"
-export F95FLAGS="$FCFLAGS -free -Tf"
+export F95FLAGS="$FCFLAGS -ipo -free -Tf"
 %endif
 make F95=$FC %{?_smp_mflags} fortran
 # f2py fails until we have numpy with intel
