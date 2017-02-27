@@ -2,6 +2,7 @@
 %global ver 3.4
 # We use -ipo so we depend on the specific compiler version (-f)
 %{?altcc_init:%altcc_init -n %{shortname} -v %{ver} -f}
+%{?altcc:%global debug_package %{nil}}
 
 #global commit0 8405c781f2eacf303605504a02b2d13f1beecfbb
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
