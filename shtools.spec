@@ -1,5 +1,5 @@
 %global shortname shtools
-%global ver 3.4
+%global ver 4.0
 # We use -ipo so we depend on the specific compiler version (-f)
 %{?altcc_init:%altcc_init -n %{shortname} -v %{ver} -f}
 %{?altcc:%global debug_package %{nil}}
@@ -97,6 +97,10 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 
 %changelog
+* Mon Feb 27 2017 Orion Poplawski <orion@cora.nwra.com> - 4.0-1
+- Update to 4.0
+- Intel 2017.2.174
+
 * Mon Sep 26 2016 Orion Poplawski <orion@cora.nwra.com> - 3.4-1
 - Update to 3.4
 - Intel 2016.4.258
