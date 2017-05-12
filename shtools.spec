@@ -9,7 +9,7 @@
 
 Name:           shtools%{?altcc_pkg_suffix}
 Version:        %{ver}
-Release:        1%{?commit0:.git%{shortcommit0}}%{?dist}
+Release:        2%{?commit0:.git%{shortcommit0}}%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -97,6 +97,9 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 
 %changelog
+* Fri May 12 2017 Orion Poplawski <orion@cora.nwra.com> - 4.0-2
+- Intel 2017.4.196
+
 * Mon Feb 27 2017 Orion Poplawski <orion@cora.nwra.com> - 4.0-1
 - Update to 4.0
 - Intel 2017.2.174
