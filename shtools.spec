@@ -1,5 +1,5 @@
 %global shortname shtools
-%global ver 4.0
+%global ver 4.1.3
 # We use -ipo so we depend on the specific compiler version (-f)
 %{?altcc_init:%altcc_init -n %{shortname} -v %{ver} -f}
 %{?altcc:%global debug_package %{nil}}
@@ -9,7 +9,7 @@
 
 Name:           shtools%{?altcc_pkg_suffix}
 Version:        %{ver}
-Release:        2%{?commit0:.git%{shortcommit0}}%{?dist}
+Release:        1%{?commit0:.git%{shortcommit0}}%{?dist}
 Summary:        Tools for working with spherical harmonics
 
 Group:          System Environment/Libraries
@@ -17,7 +17,6 @@ License:        BSD
 URL:            http://shtools.ipgp.fr/
 Source0:        https://github.com/SHTOOLS/SHTOOLS/archive/%{?commit0:%commit0}%{!?commit0:v%{version}}.tar.gz#/%{shortname}-%{version}%{?commit0:-%shortcommit0}.tar.gz
 Source1:        shtools.module.in
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %{!?altcc:BuildRequires: gcc-gfortran}
 BuildRequires:  fftw-devel
@@ -97,6 +96,10 @@ cp -rp man/man3 $RPM_BUILD_ROOT%{_mandir}
 
 
 %changelog
+* Thu Apr 19 2018 Orion Poplawski <orion@nwra.com> - 4.1.3-1
+- Update to 4.1.3
+- Intel 2018.2.199
+
 * Fri May 12 2017 Orion Poplawski <orion@cora.nwra.com> - 4.0-2
 - Intel 2017.4.196
 
